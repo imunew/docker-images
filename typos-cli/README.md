@@ -1,11 +1,13 @@
 # typos-cli
 This is a `Dockerized` [crate-ci/typos](https://github.com/crate-ci/typos).
 
+## How to use (with Docker)
+
 ```bash
 $ docker run --rm -t -v "/path/to/app:/app" imunew/typos-cli /app --format json
 ```
 
-### With docker compose
+## How to use (with Docker Compose)
 
 ```yaml
 # docker-compose.yml
