@@ -29,7 +29,5 @@ jobs:
         with:
           context: ./typos-cli/
           push: true
-          tags:
-            - imunew/typos-cli:latest
-            - imunew/typos-cli:${{ inputs.version }}
+          tags: imunew/typos-cli:latest,imunew/typos-cli:${{ inputs.version }}
           build-args: TYPOS_CLI_VERSION=${{ inputs.version }}
