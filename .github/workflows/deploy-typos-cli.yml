@@ -32,5 +32,4 @@ jobs:
           tags:
             - imunew/typos-cli:latest
             - imunew/typos-cli:${{ inputs.version }}
-          build-args:
-            - TYPOS_CLI_VERSION=${{ inputs.version }}
+          build-args: TYPOS_CLI_VERSION=${{ inputs.version }}
