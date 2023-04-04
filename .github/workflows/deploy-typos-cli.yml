@@ -18,6 +18,8 @@ jobs:
       - name: Deploy to Docker Hub
         uses: ./.github/actions/deploy-to-docker-hub
         with:
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
           context: ./typos-cli/
           tags: imunew/typos-cli:latest,imunew/typos-cli:${{ inputs.version }}
           build-args: TYPOS_CLI_VERSION=${{ inputs.version }}
