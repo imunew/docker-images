@@ -14,8 +14,7 @@ jobs:
         run: |
           echo LATEST_DOCKER_VERSION=$(curl -s https://registry.hub.docker.com/v2/repositories/imunew/typos-cli/tags/ | jq 'first(.results[] | select(.name != "latest")) | .name' | tr -d '"') >> $GITHUB_ENV
           echo LATEST_TYPOS_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/rust-lang/crates.io-index/master/ty/po/typos-cli | jq '.vers' | jq -s | jq 'last(.[])' | tr -d '"') >> $GITHUB_ENV
-          echo LATEST_DOCKER_VERSION=$(LATEST_DOCKER_VERSION)
-          echo LATEST_TYPOS_CLI_VERSION=$(LATEST_TYPOS_CLI_VERSION)
+          cat $GITHUB_ENV
 
       - name: Deploy to Docker Hub
         uses: ./.github/actions/deploy-to-docker-hub
