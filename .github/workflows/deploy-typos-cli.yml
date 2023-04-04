@@ -2,6 +2,8 @@ name: Build and push typos-cli docker image
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * 0' # Every Monday at 7:00 AM (JST)
 
 jobs:
   deploy:
