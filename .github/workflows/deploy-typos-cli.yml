@@ -2,11 +2,8 @@ name: Build and push typos-cli docker image
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        type: string
-        required: true
-        description: 'version of typos-cli'
+  schedule:
+    - cron: '0 22 * * 0' # Every Monday at 7:00 AM (JST)
 
 jobs:
   deploy:
@@ -15,19 +12,18 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Set environment variables
+        run: |
+          echo LATEST_DOCKER_VERSION=$(curl -s https://registry.hub.docker.com/v2/repositories/imunew/typos-cli/tags/ | jq 'first(.results[] | select(.name != "latest")) | .name' | tr -d '"') >> $GITHUB_ENV
+          echo LATEST_TYPOS_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/rust-lang/crates.io-index/master/ty/po/typos-cli | jq '.vers' | jq -s | jq 'last(.[])' | tr -d '"') >> $GITHUB_ENV
+          cat $GITHUB_ENV
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      - name: Deploy to Docker Hub
+        uses: ./.github/actions/deploy-to-docker-hub
+        if: env.LATEST_DOCKER_VERSION != env.LATEST_TYPOS_CLI_VERSION
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
           context: ./typos-cli/
-          push: true
-          tags: imunew/typos-cli:latest,imunew/typos-cli:${{ inputs.version }}
-          build-args: TYPOS_CLI_VERSION=${{ inputs.version }}
+          tags: imunew/typos-cli:latest,imunew/typos-cli:${{ env.LATEST_TYPOS_CLI_VERSION }}
+          build-args: TYPOS_CLI_VERSION=${{ env.LATEST_TYPOS_CLI_VERSION }}
