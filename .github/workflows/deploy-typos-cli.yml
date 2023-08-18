@@ -27,3 +27,16 @@ jobs:
           context: ./typos-cli/
           tags: imunew/typos-cli:latest,imunew/typos-cli:${{ env.LATEST_TYPOS_CLI_VERSION }}
           build-args: TYPOS_CLI_VERSION=${{ env.LATEST_TYPOS_CLI_VERSION }}
+
+      - name: Trust docker images
+        uses: ./.github/actions/docker-trust-sign
+        if: env.LATEST_DOCKER_VERSION != env.LATEST_TYPOS_CLI_VERSION
+        with:
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_PASSWORD }}
+          image-ref-latest: imunew/typos-cli:latest
+          image-ref-specific: imunew/typos-cli:${{ env.LATEST_TYPOS_CLI_VERSION }}
+          private-key-id: ${{ secrets.DOCKER_PRIVATE_KEY_ID }}
+          private-key: ${{ secrets.DOCKER_PRIVATE_KEY }}
+          private-key-passphrase: ${{ secrets.DOCKER_PRIVATE_KEY_PASSPHRASE }}
+          private-key-name: ${{ secrets.DOCKER_PRIVATE_KEY_NAME }}

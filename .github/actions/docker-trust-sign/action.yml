@@ -1,0 +1,49 @@
+name: "Deploy to Docker Hub Action"
+description: "Deploy to Docker Hub"
+inputs:
+  docker-username:
+    description: Docker username
+    required: true
+  docker-password:
+    description: Docker password
+    required: true
+  image-ref-latest:
+    description: 'The Docker image ref, example: image_name:tag'
+    required: true
+  image-ref-specific:
+    description: 'The Docker image ref, example: image_name:tag'
+    required: false
+  private-key-id:
+    description: 'The Docker private key id (hash)'
+    required: true
+  private-key:
+    description: 'The Docker private key'
+    required: true
+  private-key-passphrase:
+    description: 'The Docker private key passphrase'
+    required: true
+  private-key-name:
+    description: 'The Docker private key name'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Trust docker images
+      shell: sh
+      run: |
+        mkdir -p ~/.docker/trust/private/
+        echo "${{ inputs.private-key }}" > ~/.docker/trust/private/${{ inputs.private-key-id }}.key
+        chmod 600 ~/.docker/trust/private/${{ inputs.private-key-id }}.key
+        docker trust key load ~/.docker/trust/private/${{ inputs.private-key-id }}.key
+        docker trust sign --local "${{ inputs.image-ref-latest }}"
+        docker trust sign --local "${{ inputs.image-ref-specific }}"
+      env:
+        DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE: "${{ inputs.private-key-passphrase }}"
+        DOCKER_CONTENT_TRUST: "1"
