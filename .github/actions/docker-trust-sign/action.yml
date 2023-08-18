@@ -1,6 +1,12 @@
 name: "Deploy to Docker Hub Action"
 description: "Deploy to Docker Hub"
 inputs:
+  docker-username:
+    description: Docker username
+    required: true
+  docker-password:
+    description: Docker password
+    required: true
   image-ref-latest:
     description: 'The Docker image ref, example: image_name:tag'
     required: true
